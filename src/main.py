@@ -23,6 +23,8 @@ if __name__ == "__main__":
     query = "native spanish world"
     print("Query")
     searchEngine.vectorSpaceModelSearch(query)
+    searchEngine.bm25Search(query)
+    searchEngine.qlmSearch(query)
 
 
             

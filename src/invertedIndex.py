@@ -14,24 +14,38 @@ class InvertedIndex:
     def __init__(self):
         self.index = dict()
         self.textPreprocessor = TextPreprocessor()
+        self.document_count = 0
+        self.average_document_length=0
+        self.word_count = 0
+        self.term_freq = dict()
     
     def generateIndex(self, documents):
         # THe expected oobject is a list of tuples that (doc-id , text). Each tuple contains the document id and the text
+        self.document_count = len(documents)
         for doc in documents:
             id = doc[0]
             # Prepare the text and return the list of tokens
             tokens =self.textPreprocessor.prepocess(doc[1])
+            # Update the word count
+            self.word_count += len(tokens)
             # Count the frequency of each term in the document
             token_freq = Counter(tokens)
             #Add terms to the index. If it's a new term it will the term to the dictionary and the document.
             #If term already exist it will add the document to the posting list
+            #Posting list contains id of document, freq onf the term and document length
             for token in token_freq:
                 if token in self.index:
-                    self.index[token][id] = token_freq[token]
+                    self.index[token][id] = (token_freq[token], len(tokens))
+                    # Count the total freq of the indext term in the corpus
+                    self.term_freq[token] += token_freq[token]
                 else:
                     posting = dict()
-                    posting[id]= token_freq[token]
+                    posting[id]= (token_freq[token], len(tokens))
                     self.index[token] = posting
+                    self.term_freq[token] = token_freq[token]
+            
+        #Calculates the average document length
+        self.average_document_length = self.word_count / self.document_count
         
         #After the index is genereated the elements and the posting list need to be sorted
         self.index = dict(sorted(self.index.items()))
