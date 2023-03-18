@@ -29,7 +29,7 @@ if __name__ == "__main__":
     searchEngine = SearchEngine()
     
     # Convert collection (XML format) to dataframe
-    collection_path = '../data/cranfield-trec-dataset/cran.all.1400.xml'
+    collection_path = '../data/trec-dataset/cran.all.1400.xml'
     collection_xml = txt = Path(collection_path).read_text()
     collection_xml = "<root> " + collection_xml + " </root> " #Add root element to avoid problems while parsing
     df_collection = pd.read_xml(collection_xml, xpath='.//doc')
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     searchEngine.invertedIndex.generateIndex(collection)
     
     # Get the list of queries
-    queries_path = '../data/cranfield-trec-dataset/cran.qry.xml'
+    queries_path = '../data/trec-dataset/cran.qry.xml'
     queries_xml = txt = Path(queries_path).read_text()
     df_queries = pd.read_xml(queries_xml)
     
