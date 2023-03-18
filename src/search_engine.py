@@ -9,12 +9,13 @@ from invertedIndex import InvertedIndex
 from numpy import dot
 from numpy import log
 from numpy.linalg import norm
+import itertools
 
 class SearchEngine:
     def __init__(self):
         self.invertedIndex = InvertedIndex()
         
-    def vectorSpaceModelSearch(self, query):
+    def vectorSpaceModelSearch(self, query, maxResults = None):
         matrix = self.invertedIndex.documentMatrixForQuery(query)
         
         # Calculates cosine similarity for each document
@@ -26,9 +27,14 @@ class SearchEngine:
         matrix = matrix[['Similarity']]
         doc_ranking = matrix.to_dict()
         doc_ranking = doc_ranking['Similarity']
-        print(doc_ranking)
         
-    def bm25Search(self, query, k=1.2, b=0.75):
+        # Returns the top N documents if the maxResults parameter is specified
+        if maxResults is not None:
+            doc_ranking = dict(itertools.islice(doc_ranking.items(), maxResults))
+        
+        return doc_ranking
+        
+    def bm25Search(self, query, k=1.2, b=0.75, maxResults = None):
         query_terms = self.invertedIndex.textPreprocessor.prepocess(query) # Tokenize the query
         doc_ranking = dict()
         for term in query_terms:
@@ -51,9 +57,14 @@ class SearchEngine:
          # Sort descending
         doc_ranking = sorted(doc_ranking.items(), key= lambda x:x[1], reverse= True)
         doc_ranking = dict(doc_ranking)
-        print(doc_ranking)
         
-    def qlmSearch(self, query, lam = 0.35):
+        # Returns the top N documents if the maxResults parameter is specified
+        if maxResults is not None:
+            doc_ranking = dict(itertools.islice(doc_ranking.items(), maxResults))
+        
+        return doc_ranking
+        
+    def qlmSearch(self, query, lam = 0.35, maxResults = None):
         # lambda OF 0.35 is the standard useb by TREC
         query_terms = self.invertedIndex.textPreprocessor.prepocess(query) # Tokenize the query
         doc_ranking = dict()
@@ -77,7 +88,12 @@ class SearchEngine:
         # Sort descending
         doc_ranking = sorted(doc_ranking.items(), key= lambda x:x[1], reverse= True)
         doc_ranking = dict(doc_ranking)
-        print(doc_ranking)
+        
+        # Returns the top N documents if the maxResults parameter is specified
+        if maxResults is not None:
+            doc_ranking = dict(itertools.islice(doc_ranking.items(), maxResults))
+        
+        return doc_ranking
                         
                     
                     

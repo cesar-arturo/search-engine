@@ -42,12 +42,14 @@ class TextPreprocessor:
     
     def tokenization(self, text):
         # Remove leading and trailing spaces
-        text = text.strip()
-        # Converto to lowercase
-        text = text.lower()
-        tokens= word_tokenize(text)
-        #Remove punctuation
-        tokens =[token for token in tokens if not token in string.punctuation]
+        tokens = []
+        if text is not None:
+            text = text.strip()
+            # Converto to lowercase
+            text = text.lower()
+            tokens= word_tokenize(text)
+            #Remove punctuation
+            tokens =[token for token in tokens if not token in string.punctuation]
         return tokens
     
     def prepocess(self, text):
