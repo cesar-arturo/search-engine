@@ -13,7 +13,7 @@ import pandas as pd
 class InvertedIndex:
     def __init__(self):
         self.index = dict()
-        self.textPreprocessor = TextPreprocessor()
+        self.textPreprocessor = TextPreprocessor(meaning_method = 'stemming')
         self.document_count = 0
         self.average_document_length=0
         self.word_count = 0
@@ -52,6 +52,7 @@ class InvertedIndex:
         
     def documentMatrixForQuery(self, query):
         query_terms = self.textPreprocessor.prepocess(query) # Tokenize the query
+        query_terms = self.textPreprocessor.uniqueTerms(query_terms)
 
         df = pd.DataFrame(columns = query_terms) #Creates an empty dataframe with the terms as columns
 

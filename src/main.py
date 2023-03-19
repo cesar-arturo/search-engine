@@ -50,6 +50,8 @@ if __name__ == "__main__":
     
     #Get the top 100 results per query using the 3 mthods implemented ( Vector Space Model , BM25 and LM)
     for index, row in df_queries.iterrows():
+        #if row['num'] % 10 == 0:
+            #print("Processing query ",row['num'], "...\n"  )
         results_vsm = searchEngine.vectorSpaceModelSearch(row['title'], maxResults = 100)
         data_vsm.extend(generate_data_trec_eval(results_vsm, row['num']))
         

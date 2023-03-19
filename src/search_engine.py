@@ -11,6 +11,8 @@ from numpy import log
 from numpy.linalg import norm
 import itertools
 
+import pandas as pd
+
 class SearchEngine:
     def __init__(self):
         self.invertedIndex = InvertedIndex()
@@ -34,9 +36,13 @@ class SearchEngine:
         
         return doc_ranking
         
-    def bm25Search(self, query, k=1.2, b=0.75, maxResults = None):
+    def bm25Search(self, query, k=2.0, b=0.75, maxResults = None):
         query_terms = self.invertedIndex.textPreprocessor.prepocess(query) # Tokenize the query
+        query_terms = self.invertedIndex.textPreprocessor.uniqueTerms(query_terms)
         doc_ranking = dict()
+        
+        df = pd.DataFrame(columns = query_terms) #Creates an empty dataframe with the terms as columns
+        
         for term in query_terms:
             if term in  self.invertedIndex.index:
                 # Get documents that contains the term
@@ -52,8 +58,13 @@ class SearchEngine:
                     # Sum the score to the total score of the document
                     if doc_id in doc_ranking:
                         doc_ranking[doc_id] += bm25_score
+                        
                     else:
                         doc_ranking[doc_id] = bm25_score
+                        df.loc[doc_id] = [0] * len(query_terms)
+                    
+                    df.at[doc_id,term] = bm25_score
+        df.loc[:,'Row_Total'] = df.sum(numeric_only=True, axis=1)     
          # Sort descending
         doc_ranking = sorted(doc_ranking.items(), key= lambda x:x[1], reverse= True)
         doc_ranking = dict(doc_ranking)
@@ -67,6 +78,7 @@ class SearchEngine:
     def qlmSearch(self, query, lam = 0.35, maxResults = None):
         # lambda OF 0.35 is the standard useb by TREC
         query_terms = self.invertedIndex.textPreprocessor.prepocess(query) # Tokenize the query
+        query_terms = self.invertedIndex.textPreprocessor.uniqueTerms(query_terms)
         doc_ranking = dict()
         for term in query_terms:
             if term in  self.invertedIndex.index:
